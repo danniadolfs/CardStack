@@ -1,8 +1,10 @@
 package com.example.d3.cardstack;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
+import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,15 +12,16 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class MainActivity extends AppCompatActivity implements
-        GestureDetector.OnGestureListener,
-        GestureDetector.OnDoubleTapListener{
+public class MainActivity extends AppCompatActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -30,9 +33,6 @@ public class MainActivity extends AppCompatActivity implements
      * user interaction before hiding the system UI.
      */
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    private static final String DEBUG_TAG = "Gestures";
-    private GestureDetectorCompat mDetector;
 
     /**
      * Some older devices needs a small delay between UI widget updates
@@ -101,27 +101,42 @@ public class MainActivity extends AppCompatActivity implements
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
+        Button play_button,score_button;
+        play_button = (Button)findViewById(R.id.play_button);
+        score_button = (Button)findViewById(R.id.score_button);
 
 
         // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });
+
+        assert play_button != null;
+        if (play_button != null) {
+            play_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getApplication(), gameActivity.class);
+                    Toast.makeText(getApplicationContext(), "play the game", Toast.LENGTH_SHORT).show();
+                    startActivity(i);
+                }
+            });
+        }
+
+        assert score_button != null;
+        if (score_button != null) {
+            score_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Intent i = new Intent(getApplication(),CirclesDrawingView.class);
+                    Toast.makeText(getApplicationContext(), "View the high score", Toast.LENGTH_SHORT).show();
+                    //startActivity(i);
+
+                }
+            });
+        }
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-
-        // Instantiate the gesture detector with the
-        // application context and an implementation of
-        // GestureDetector.OnGestureListener
-        mDetector = new GestureDetectorCompat(this,this);
-        // Set the gesture detector as the double tap
-        // listener.
+        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
     @Override
@@ -148,8 +163,8 @@ public class MainActivity extends AppCompatActivity implements
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
-        mVisible = false;
+        //mControlsView.setVisibility(View.GONE);
+        //mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
@@ -178,65 +193,4 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /** MY STUFF **/
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        this.mDetector.onTouchEvent(event);
-        // Be sure to call the superclass implementation
-        return super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onDown(MotionEvent event) {
-        Log.d(DEBUG_TAG,"onDown: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onFling(MotionEvent event1, MotionEvent event2,
-                           float velocityX, float velocityY) {
-        Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
-        return true;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-                            float distanceY) {
-        Log.d(DEBUG_TAG, "onScroll: " + e1.toString()+e2.toString());
-        return true;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onSingleTapUp: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
-        return true;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent event) {
-        Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
-        return true;
-    }
 }

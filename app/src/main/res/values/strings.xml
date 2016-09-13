@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">CardStack</string>
-
-    <string name="dummy_button">Dummy Button</string>
+    <string name="play_button">Play</string>
+    <string name="score_button">High score</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="main_title">CardStack</string>
+
+
+    <string name="title_activity_game">gameActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="screen_game">GAME\nSCREEN</string>
+    <string name="title_activity_circles_drawing_view">CirclesDrawingView</string>
 </resources>
