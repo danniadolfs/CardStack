@@ -1,19 +1,28 @@
 package com.example.d3.cardstack;
 
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -41,6 +50,11 @@ public class gameActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         mControlsView = findViewById(R.id.fullscreen_content);
+
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.game_view);
+        relativeLayout.addView(new Rectangle(this));
+
+
     }
 
     @Override
@@ -111,7 +125,7 @@ public class gameActivity extends AppCompatActivity  {
                 int xcor = (int) event.getX();
                 int ycor = (int) event.getY();
                 String pos = xcor + "," + ycor;
-                //Toast.makeText(getApplicationContext(),"touch",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"touch", Toast.LENGTH_SHORT).show();
 
 
             case MotionEvent.ACTION_CANCEL:
@@ -121,7 +135,47 @@ public class gameActivity extends AppCompatActivity  {
         }
         return true;
     }
+
+    /* DRAWING RECTANGLES */
+    private class Rectangle extends View{
+        Paint paintb = new Paint();
+        Paint paintr = new Paint();
+        Paint painty = new Paint();
+
+        public Rectangle(Context context) {
+            super(context);
+        }
+        @Override
+        public void onDraw(Canvas canvas) {
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            int height = displaymetrics.heightPixels;
+            int width = displaymetrics.widthPixels;
+
+            int top = height - height;
+            int bottom = height;
+            int left = width - width;
+            int right = width;
+
+            paintb.setColor(Color.BLACK);
+            paintr.setColor(Color.RED);
+            painty.setColor(Color.YELLOW);
+            Rect spades = new Rect(left,top,right,(int)(0.15*bottom));
+            Rect clover = new Rect(left,bottom-(int)(0.15*bottom),right,bottom);
+            Rect hearts = new Rect(left,top+(int)(bottom*0.15),left+(int)(right*0.25),(int)(bottom*0.85));
+            Rect diamond = new Rect(right-(int)(0.25*right),top+(int)(bottom*0.15),right,(int)(bottom*0.85));
+            Rect middle = new Rect((int)(Math.floor(0.14*bottom)),top+(int)(bottom*0.15),right-(int)(right*0.25),(int)(bottom*0.85));
+            canvas.drawRect(spades, paintb);
+            canvas.drawRect(clover, paintb);
+            canvas.drawRect(hearts, paintr);
+            canvas.drawRect(diamond,paintr);
+            canvas.drawRect(middle,painty);
+
+        }
+    }
 }
+
+
 
 /*------------------------------------------------------------------------------------------------
 * ------------------------------------------------------------------------------------------------
