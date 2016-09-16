@@ -53,8 +53,6 @@ public class gameActivity extends AppCompatActivity  {
 
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.game_view);
         relativeLayout.addView(new Rectangle(this));
-
-
     }
 
     @Override
@@ -82,6 +80,7 @@ public class gameActivity extends AppCompatActivity  {
     /*
     Movement with velocity
      */
+    public int xpos,ypos;
     private static final String DEBUG_TAG = "Velocity";
     private VelocityTracker mVelocityTracker = null;
     @Override
@@ -122,10 +121,30 @@ public class gameActivity extends AppCompatActivity  {
                 float x = VelocityTrackerCompat.getXVelocity(mVelocityTracker, pointerId);
                 float y = VelocityTrackerCompat.getYVelocity(mVelocityTracker, pointerId);
 
-                int xcor = (int) event.getX();
-                int ycor = (int) event.getY();
-                String pos = xcor + "," + ycor;
-                Toast.makeText(getApplicationContext(),"touch", Toast.LENGTH_SHORT).show();
+                xpos = (int) event.getX();
+                ypos = (int) event.getY();
+                //String pos = xcor + "," + ycor;
+
+                //Toast.makeText(getApplicationContext(),"touch", Toast.LENGTH_SHORT).show();
+                if(spades.contains(xpos,ypos)){
+                    Toast.makeText(getApplicationContext(),"Spades", Toast.LENGTH_SHORT).show();
+                }
+
+                if(clover.contains(xpos,ypos)){
+                    Toast.makeText(getApplicationContext(),"clover", Toast.LENGTH_SHORT).show();
+                }
+
+                if(hearts.contains(xpos,ypos)){
+                    Toast.makeText(getApplicationContext(),"hearts", Toast.LENGTH_SHORT).show();
+                }
+
+                if(diamond.contains(xpos,ypos)){
+                    Toast.makeText(getApplicationContext(),"diamond", Toast.LENGTH_SHORT).show();
+                }
+
+                if(middle.contains(xpos,ypos)){
+                    Toast.makeText(getApplicationContext(),"Middle", Toast.LENGTH_SHORT).show();
+                }
 
 
             case MotionEvent.ACTION_CANCEL:
@@ -137,7 +156,9 @@ public class gameActivity extends AppCompatActivity  {
     }
 
     /* DRAWING RECTANGLES */
-    private class Rectangle extends View{
+
+    public Rect spades,clover,hearts,diamond,middle;
+    public class Rectangle extends View{
         Paint paintb = new Paint();
         Paint paintr = new Paint();
         Paint painty = new Paint();
@@ -145,8 +166,9 @@ public class gameActivity extends AppCompatActivity  {
         public Rectangle(Context context) {
             super(context);
         }
-        @Override
-        public void onDraw(Canvas canvas) {
+
+        public void makeField(Canvas canvas)
+        {
             DisplayMetrics displaymetrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
             int height = displaymetrics.heightPixels;
@@ -160,17 +182,22 @@ public class gameActivity extends AppCompatActivity  {
             paintb.setColor(Color.BLACK);
             paintr.setColor(Color.RED);
             painty.setColor(Color.YELLOW);
-            Rect spades = new Rect(left,top,right,(int)(0.15*bottom));
-            Rect clover = new Rect(left,bottom-(int)(0.15*bottom),right,bottom);
-            Rect hearts = new Rect(left,top+(int)(bottom*0.15),left+(int)(right*0.25),(int)(bottom*0.85));
-            Rect diamond = new Rect(right-(int)(0.25*right),top+(int)(bottom*0.15),right,(int)(bottom*0.85));
-            Rect middle = new Rect((int)(Math.floor(0.14*bottom)),top+(int)(bottom*0.15),right-(int)(right*0.25),(int)(bottom*0.85));
+            spades = new Rect(left,top,right,(int)(0.15*bottom));
+            clover = new Rect(left,bottom-(int)(0.15*bottom),right,bottom);
+            hearts = new Rect(left,top+(int)(bottom*0.15),left+(int)(right*0.25),(int)(bottom*0.85));
+            diamond = new Rect(right-(int)(0.25*right),top+(int)(bottom*0.15),right,(int)(bottom*0.85));
+            middle = new Rect((int)(Math.floor(0.14*bottom)),top+(int)(bottom*0.15),right-(int)(right*0.25),(int)(bottom*0.85));
+
             canvas.drawRect(spades, paintb);
             canvas.drawRect(clover, paintb);
             canvas.drawRect(hearts, paintr);
             canvas.drawRect(diamond,paintr);
-            canvas.drawRect(middle,painty);
+            canvas.drawRect(middle, painty);
+        }
 
+        public void onDraw(Canvas canvas) {
+            makeField(canvas);
+            super.onDraw(canvas);
         }
     }
 }
