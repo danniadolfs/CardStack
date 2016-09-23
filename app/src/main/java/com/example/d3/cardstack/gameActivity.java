@@ -135,22 +135,22 @@ public class gameActivity extends AppCompatActivity  {
                 //Toast.makeText(getApplicationContext(),"touch", Toast.LENGTH_SHORT).show();
                 if(spades.contains(xpos,ypos)){
                     if(isSpades) nextCard();
-                    Toast.makeText(getApplicationContext(),"Spades", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"Spades", Toast.LENGTH_SHORT).show();
                 }
 
                 if(clover.contains(xpos,ypos)){
                     if(isClovers) nextCard();
-                    Toast.makeText(getApplicationContext(),"clover", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"clover", Toast.LENGTH_SHORT).show();
                 }
 
                 if(hearts.contains(xpos,ypos)){
                     if(isHearts) nextCard();
-                    Toast.makeText(getApplicationContext(),"hearts", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"hearts", Toast.LENGTH_SHORT).show();
                 }
 
                 if(diamond.contains(xpos,ypos)){
                     if(isDiamonds) nextCard();
-                    Toast.makeText(getApplicationContext(),"diamond", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"diamond", Toast.LENGTH_SHORT).show();
                 }
 
                 if(middle.contains(xpos,ypos)){
@@ -219,6 +219,10 @@ public class gameActivity extends AppCompatActivity  {
     private boolean isHearts = false;
     private boolean isClovers = false;
     private boolean isDiamonds = false;
+    public int nrSpades = 0;
+    public int nrHearts = 0;
+    public int nrClovers = 0;
+    public int nrDiamonds = 0;
     /* GAME LOGIC */
     public class gameLogic {
 
@@ -258,6 +262,7 @@ public class gameActivity extends AppCompatActivity  {
         if(!playingcards.empty()){
             currentCard = (String) playingcards.peek();
             Log.d("Current Card is: ",currentCard);
+            Toast.makeText(getApplication(), currentCard, Toast.LENGTH_SHORT).show();
         }
         checkCardType();
     }
@@ -279,6 +284,14 @@ public class gameActivity extends AppCompatActivity  {
         checkCardType();
         Log.d("Game","Next card on stack.");
         if(playingcards.empty()) stackComplete();
+    }
+
+    //For demo
+    public void nrCard(){
+        if(isSpades) nrSpades++;
+        if(isClovers) nrClovers++;
+        if(isDiamonds) nrDiamonds++;
+        if(isHearts) nrHearts++;
     }
 
     public void stackComplete(){
