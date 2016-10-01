@@ -25,13 +25,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Stack;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
+ *
  */
 
 public class gameActivity extends AppCompatActivity  {
@@ -78,8 +78,6 @@ public class gameActivity extends AppCompatActivity  {
         if (actionBar != null) {
             actionBar.hide();
         }
-        //mControlsView.setVisibility(View.GONE);
-
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
     }
@@ -88,7 +86,6 @@ public class gameActivity extends AppCompatActivity  {
     Movement with velocity
      */
     public int xpos,ypos;
-    private static final String DEBUG_TAG = "Velocity";
     private VelocityTracker mVelocityTracker = null;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -134,27 +131,55 @@ public class gameActivity extends AppCompatActivity  {
 
                 //Toast.makeText(getApplicationContext(),"touch", Toast.LENGTH_SHORT).show();
                 if(spades.contains(xpos,ypos)){
-                    if(isSpades) nextCard();
-                    //Toast.makeText(getApplicationContext(),"Spades", Toast.LENGTH_SHORT).show();
+                    if(isSpades) {
+                        if(spades_stack.empty()) nextCard(spades_stack);
+                        if(checkCurrentCardNumber() == checkNextCardNumber(spades_stack)){
+                            nextCard(spades_stack);
+
+                        }
+                    }
+                    redraw();
                 }
 
                 if(clover.contains(xpos,ypos)){
-                    if(isClovers) nextCard();
-                    //Toast.makeText(getApplicationContext(),"clover", Toast.LENGTH_SHORT).show();
+                    if(isClovers){
+                        if(clovers_stack.empty()) nextCard(clovers_stack);
+                        if(checkCurrentCardNumber() == checkNextCardNumber(clovers_stack)){
+                            nextCard(clovers_stack);
+
+                        }
+
+                    }
+                    redraw();
                 }
 
                 if(hearts.contains(xpos,ypos)){
-                    if(isHearts) nextCard();
-                    //Toast.makeText(getApplicationContext(),"hearts", Toast.LENGTH_SHORT).show();
+                    if(isHearts){
+                        if(hearts_stack.empty()) nextCard(hearts_stack);
+                        if(checkCurrentCardNumber() == checkNextCardNumber(hearts_stack)){
+                            nextCard(hearts_stack);
+
+                        }
+                    }
+                    redraw();
                 }
 
                 if(diamond.contains(xpos,ypos)){
-                    if(isDiamonds) nextCard();
-                    //Toast.makeText(getApplicationContext(),"diamond", Toast.LENGTH_SHORT).show();
+                    if(isDiamonds){
+                        if(diamonds_stack.empty()) nextCard(diamonds_stack);
+                        if(checkCurrentCardNumber() == checkNextCardNumber(diamonds_stack)){
+                            nextCard(diamonds_stack);
+
+                        }
+
+                    }
+                    redraw();
                 }
 
                 if(middle.contains(xpos,ypos)){
-                    nextCard();
+                    if(!playingcards.empty()) nextCard(playingcards_skip);
+                    //AI();
+                    redraw();
                 }
 
 
@@ -168,7 +193,9 @@ public class gameActivity extends AppCompatActivity  {
 
     /* DRAWING RECTANGLES */
     public Rect spades,clover,hearts,diamond,middle;
+    public String Score = "0";
     public class Rectangle extends View{
+        Paint paintText = new Paint();
         Paint paintb = new Paint();
         Paint paintr = new Paint();
         Paint painty = new Paint();
@@ -205,37 +232,75 @@ public class gameActivity extends AppCompatActivity  {
             canvas.drawRect(middle, painty);
         }
 
+        public void createText(Canvas canvas)
+        {
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            int height = displaymetrics.heightPixels;
+            int width = displaymetrics.widthPixels;
+
+            int spadesX = width/2;
+            int spadesY = height/2;
+            int bottom = height;
+            int left = width - width;
+            int right = width;
+
+
+            paintText.setColor(Color.GREEN);
+            paintText.setTextSize(20);
+            //SPADES
+            canvas.drawText(spades_card_peek, spadesX-15, bottom-bottom+100, paintText);
+            //HEARTS
+            canvas.drawText(hearts_card_peek,left+10, spadesY, paintText);
+            //CLOVERS
+            canvas.drawText(clovers_card_peek,spadesX-15, bottom-100, paintText);
+            //DIAMONDS
+            canvas.drawText(diamonds_card_peek,right-50, spadesY, paintText);
+            //CENTER CARD
+            paintText.setColor(Color.BLACK);
+            canvas.drawText(currentCard,spadesX-15,spadesY,paintText);
+
+        }
+
         public void onDraw(Canvas canvas) {
             makeField(canvas);
+            createText(canvas);
             super.onDraw(canvas);
         }
     }
 
     public int score;
     public Stack playingcards = new Stack();
+    public Stack playingcards_skip = new Stack();
+
+    public Stack spades_stack = new Stack();
+    public String spades_card_peek = "";
+
+    public Stack clovers_stack = new Stack();
+    public String clovers_card_peek = "";
+
+    public Stack diamonds_stack = new Stack();
+    public String diamonds_card_peek = "";
+
+    public Stack hearts_stack = new Stack();
+    public String hearts_card_peek = "";
+
     public String currentCard = "";
 
     private boolean isSpades = false;
     private boolean isHearts = false;
     private boolean isClovers = false;
     private boolean isDiamonds = false;
-    public int nrSpades = 0;
-    public int nrHearts = 0;
-    public int nrClovers = 0;
-    public int nrDiamonds = 0;
     /* GAME LOGIC */
     public class gameLogic {
 
             //Numbers of cards
-            String[] cards = {"2","3","4","5","6","7","8","9","10","11","12","13","14"};
-
+            String[] cards = {"02","03","04","05","06","07","08","09","10","11","12","13","14"};
             //Types of cards
             String[] types ={"H", "S", "C", "D"};
-
             String[][]stack = new String[13][4];
             String[] toShuffle = new String[52];
             int toShuffleCount = 0;
-
             public void stackOfCards(){
                 cardstack();
             }
@@ -262,7 +327,6 @@ public class gameActivity extends AppCompatActivity  {
         if(!playingcards.empty()){
             currentCard = (String) playingcards.peek();
             Log.d("Current Card is: ",currentCard);
-            Toast.makeText(getApplication(), currentCard, Toast.LENGTH_SHORT).show();
         }
         checkCardType();
     }
@@ -278,25 +342,89 @@ public class gameActivity extends AppCompatActivity  {
         else isClovers = false;
     }
 
-    public void nextCard(){
-        if(!playingcards.empty()) playingcards.pop();
+    public void nextCard(Stack stack){
+        Iterator itr = playingcards.iterator();
+        if(itr.hasNext()) stack.push(playingcards.pop());
+        if(playingcards.size() == 0) addRestToStack();
+        if(playingcards.empty() && playingcards_skip.empty()) stackComplete();
         currentCard();
         checkCardType();
-        Log.d("Game","Next card on stack.");
-        if(playingcards.empty()) stackComplete();
+        Log.d("Game", "Next card on stack.");
     }
 
-    //For demo
-    public void nrCard(){
-        if(isSpades) nrSpades++;
-        if(isClovers) nrClovers++;
-        if(isDiamonds) nrDiamonds++;
-        if(isHearts) nrHearts++;
+    public void AI(){
+        if(isDiamonds) {
+            if (diamonds_stack.empty()) nextCard(diamonds_stack);
+            if (checkCurrentCardNumber() == checkNextCardNumber(diamonds_stack)) {
+                nextCard(diamonds_stack);
+
+            }
+        }
+        if(isSpades) {
+            if (spades_stack.empty()) nextCard(spades_stack);
+            if (checkCurrentCardNumber() == checkNextCardNumber(spades_stack)) {
+                nextCard(spades_stack);
+
+            }
+        }
+        if(isClovers) {
+            if (clovers_stack.empty()) nextCard(clovers_stack);
+            if (checkCurrentCardNumber() == checkNextCardNumber(clovers_stack)) {
+                nextCard(clovers_stack);
+
+            }
+
+        }
+        if(isHearts) {
+            if (hearts_stack.empty()) nextCard(hearts_stack);
+            if (checkCurrentCardNumber() == checkNextCardNumber(hearts_stack)) {
+                nextCard(hearts_stack);
+
+            }
+        }
+        redraw();
+    }
+
+    public int checkNextCardNumber(Stack stack){
+        String nr = stack.peek().toString();
+        nr = nr.substring(0,2);
+        int number = Integer.parseInt(nr);
+
+        if(number == 14) return 2;
+        else return number+1;
+    }
+
+    public int checkCurrentCardNumber(){
+        String numb_string = currentCard.substring(0, 2);
+        int current_nr = Integer.parseInt(numb_string);
+        return current_nr;
+    }
+
+    public void peekCheat(){
+        if(!spades_stack.empty()) spades_card_peek = spades_stack.peek().toString();
+        if(!hearts_stack.empty()) hearts_card_peek = hearts_stack.peek().toString();
+        if(!clovers_stack.empty()) clovers_card_peek = clovers_stack.peek().toString();
+        if(!diamonds_stack.empty()) diamonds_card_peek = diamonds_stack.peek().toString();
+    }
+
+    public void addRestToStack(){
+        Iterator itr = playingcards_skip.iterator();
+        while (itr.hasNext()) {
+            Log.d("STATE", playingcards_skip.peek().toString());
+            playingcards.push(playingcards_skip.pop());
+        }
     }
 
     public void stackComplete(){
-            Toast.makeText(getApplication(),"GAME WON!",Toast.LENGTH_SHORT).show();
-            finish();
+        Toast.makeText(getApplication(),"GAME WON!",Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    public void redraw(){
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.game_view);
+        relativeLayout.removeAllViews();
+        relativeLayout.addView(new Rectangle(this));
+        peekCheat();
     }
     // Implementing Fisher–Yates shuffle
     public static void shuffleArray(String[] ar)
