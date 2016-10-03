@@ -417,7 +417,7 @@ public class gameActivity extends AppCompatActivity  {
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         double elapsedSeconds = tDelta / 1000.0;
-        Toast.makeText(getApplication(),"GAME WON! "+" Results: "+elapsedSeconds,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplication(),"GAME WON!!! "+" Results: ",Toast.LENGTH_SHORT).show();
         Toast.makeText(getApplication(),"Time taken: "+elapsedSeconds +" Sec.",Toast.LENGTH_SHORT).show();
         Toast.makeText(getApplication(),"Score: " +score,Toast.LENGTH_SHORT).show();
         finish();
