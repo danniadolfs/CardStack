@@ -2,33 +2,26 @@ package com.example.d3.cardstack;
 
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.Typeface;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Stack;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  *
@@ -38,6 +31,7 @@ public class gameActivity extends AppCompatActivity  {
 
     private final Handler mHideHandler = new Handler();
     private View mControlsView;
+    private long tStart;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -58,6 +52,7 @@ public class gameActivity extends AppCompatActivity  {
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.game_view);
         relativeLayout.addView(new Rectangle(this));
 
+        tStart = System.currentTimeMillis();
         new gameLogic().stackOfCards();
         currentCard();
     }
@@ -193,7 +188,6 @@ public class gameActivity extends AppCompatActivity  {
 
     /* DRAWING RECTANGLES */
     public Rect spades,clover,hearts,diamond,middle;
-    public String Score = "0";
     public class Rectangle extends View{
         Paint paintText = new Paint();
         Paint paintb = new Paint();
@@ -248,6 +242,7 @@ public class gameActivity extends AppCompatActivity  {
 
             paintText.setColor(Color.GREEN);
             paintText.setTextSize(20);
+            canvas.drawText("Score: "+score,height-height+20,left+20,paintText);
             //SPADES
             canvas.drawText(spades_card_peek, spadesX-15, bottom-bottom+100, paintText);
             //HEARTS
@@ -259,7 +254,6 @@ public class gameActivity extends AppCompatActivity  {
             //CENTER CARD
             paintText.setColor(Color.BLACK);
             canvas.drawText(currentCard,spadesX-15,spadesY,paintText);
-
         }
 
         public void onDraw(Canvas canvas) {
@@ -269,21 +263,21 @@ public class gameActivity extends AppCompatActivity  {
         }
     }
 
-    public int score;
+    public int score = 0;
     public Stack playingcards = new Stack();
     public Stack playingcards_skip = new Stack();
 
     public Stack spades_stack = new Stack();
-    public String spades_card_peek = "";
+    public String spades_card_peek = "S";
 
     public Stack clovers_stack = new Stack();
-    public String clovers_card_peek = "";
+    public String clovers_card_peek = "C";
 
     public Stack diamonds_stack = new Stack();
-    public String diamonds_card_peek = "";
+    public String diamonds_card_peek = "D";
 
     public Stack hearts_stack = new Stack();
-    public String hearts_card_peek = "";
+    public String hearts_card_peek = "H";
 
     public String currentCard = "";
 
@@ -347,30 +341,32 @@ public class gameActivity extends AppCompatActivity  {
         if(itr.hasNext()) stack.push(playingcards.pop());
         if(playingcards.size() == 0) addRestToStack();
         if(playingcards.empty() && playingcards_skip.empty()) stackComplete();
+        if(getPoints()) score += 10;
+        if(!getPoints()) score -= 100;
         currentCard();
         checkCardType();
         Log.d("Game", "Next card on stack.");
     }
 
-    public void AI(){
+    public boolean getPoints(){
         if(isDiamonds) {
             if (diamonds_stack.empty()) nextCard(diamonds_stack);
             if (checkCurrentCardNumber() == checkNextCardNumber(diamonds_stack)) {
-                nextCard(diamonds_stack);
+                return false;
 
             }
         }
         if(isSpades) {
             if (spades_stack.empty()) nextCard(spades_stack);
             if (checkCurrentCardNumber() == checkNextCardNumber(spades_stack)) {
-                nextCard(spades_stack);
+                return false;
 
             }
         }
         if(isClovers) {
             if (clovers_stack.empty()) nextCard(clovers_stack);
             if (checkCurrentCardNumber() == checkNextCardNumber(clovers_stack)) {
-                nextCard(clovers_stack);
+                return false;
 
             }
 
@@ -378,12 +374,14 @@ public class gameActivity extends AppCompatActivity  {
         if(isHearts) {
             if (hearts_stack.empty()) nextCard(hearts_stack);
             if (checkCurrentCardNumber() == checkNextCardNumber(hearts_stack)) {
-                nextCard(hearts_stack);
+                return false;
 
             }
         }
         redraw();
+        return true;
     }
+
 
     public int checkNextCardNumber(Stack stack){
         String nr = stack.peek().toString();
@@ -416,7 +414,12 @@ public class gameActivity extends AppCompatActivity  {
     }
 
     public void stackComplete(){
-        Toast.makeText(getApplication(),"GAME WON!",Toast.LENGTH_SHORT).show();
+        long tEnd = System.currentTimeMillis();
+        long tDelta = tEnd - tStart;
+        double elapsedSeconds = tDelta / 1000.0;
+        Toast.makeText(getApplication(),"GAME WON! "+" Results: "+elapsedSeconds,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplication(),"Time taken: "+elapsedSeconds +" Sec.",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplication(),"Score: " +score,Toast.LENGTH_SHORT).show();
         finish();
     }
 
