@@ -1,13 +1,20 @@
 <resources>
     <string name="app_name">CardStack</string>
     <string name="play_button">Play</string>
-    <string name="score_button">High score</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="score_button">Leaderboard</string>
+    <string name="dummy_content">Card\nStack</string>
     <string name="main_title">CardStack</string>
 
 
     <string name="title_activity_game">gameActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="screen_game">GAME\nSCREEN</string>
-    <string name="title_activity_circles_drawing_view">CirclesDrawingView</string>
+    <string name="title_activity_leaderboard">LeaderboardActivity</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="content_name">[name]</string>
+    <string name="content_score">[score]</string>
+    <string name="content_time">[time]</string>
+    <string name="action_refresh">Refresh</string>
+
 </resources>

@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
             score_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Intent i = new Intent(getApplication(),CirclesDrawingView.class);
+                    Intent i = new Intent(getApplication(),LeaderboardActivity.class);
                     Toast.makeText(getApplicationContext(), "View the high score", Toast.LENGTH_SHORT).show();
-                    //startActivity(i);
+                    startActivity(i);
 
                 }
             });
