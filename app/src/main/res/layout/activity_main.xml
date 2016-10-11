@@ -53,7 +53,6 @@
                 android:text="@string/score_button"
                 android:layout_gravity="center" />
 
-
         </LinearLayout>
 
         <TextView
@@ -63,7 +62,6 @@
             android:text="@string/main_title"
             android:id="@+id/textView"
             android:layout_gravity="center_horizontal|top" />
-
     </FrameLayout>
 
 </FrameLayout>
