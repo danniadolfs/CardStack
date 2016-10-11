@@ -2,42 +2,39 @@ package com.example.d3.cardstack;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.d3.cardstack.utils.Util;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class MainActivity extends AppCompatActivity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
 
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
+    private EditText mNameView;
+    private EditText mPasswordView;
+    private static final String url = "http://cardstackserver.heroku.com/";
+    private UserLoginTask mAuthTask = null;
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
@@ -81,18 +78,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-        Button play_button,score_button;
+        Button play_button,score_button,login_button,form_button,back_button;
         play_button = (Button)findViewById(R.id.play_button);
         score_button = (Button)findViewById(R.id.score_button);
+        login_button = (Button)findViewById(R.id.btnLogin);
+        //mNameView = (EditText) findViewById(R.id.userEditText);
+        //mPasswordView = (EditText)findViewById(R.id.pwEditText);
 
+        /*
+        Button mNameSignInButton = (Button) findViewById(R.id.btnLogin);
+        mNameSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin();
+            }
+        }); */
 
-        // Set up the user interaction to manually show or hide the system UI.
 
         assert play_button != null;
         if (play_button != null) {
@@ -135,14 +141,6 @@ public class MainActivity extends AppCompatActivity {
         delayedHide(100);
     }
 
-    private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
-        }
-    }
-
     private void hide() {
         // Hide UI first
         ActionBar actionBar = getSupportActionBar();
@@ -177,4 +175,153 @@ public class MainActivity extends AppCompatActivity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
+
+    private void attemptLogin() {
+        if (mAuthTask != null) {
+            return;
+        }
+
+        // Reset errors.
+        mNameView.setError(null);
+        mPasswordView.setError(null);
+
+        // Store values at the time of the login attempt.
+        String name = mNameView.getText().toString();
+        String pw = mPasswordView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // Check for a valid password
+        if (TextUtils.isEmpty(pw)) {
+            mPasswordView.setError("Invalid Password.");
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
+        // Check for a valid username.
+        if (TextUtils.isEmpty(name)) {
+            mNameView.setError("Name is required.");
+            focusView = mNameView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            mAuthTask = new UserLoginTask(name, pw);
+            mAuthTask.execute((Void) null);
+        }
+    }
+
+    /**
+     * Represents an asynchronous login/registration task used to authenticate
+     * the user.
+     */
+    private class UserLoginTask extends AsyncTask<Void, Void, user_rest> {
+
+        private final String mName;
+        private final String mPassword;
+
+        UserLoginTask(String username, String password) {
+            mName = username;
+            mPassword = password;
+        }
+
+        @Override
+        protected user_rest doInBackground(Void... params) {
+            user_rest responseUser = null;
+            HttpURLConnection conn = null;
+
+            try {
+                conn = (HttpURLConnection) new URL(url + "login").openConnection();
+                ((HttpURLConnection)conn).setRequestMethod("GET");
+                String credentials = mName + ":" + mPassword;
+                // create Base64 encodet string
+                final String basic =
+                        "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+
+
+                conn.addRequestProperty("Authorization", "Basic " + basic);
+                conn.addRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                conn.setUseCaches(false);
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                conn.addRequestProperty("Content-Type","application/json");
+                JSONObject POST_PARAM = new JSONObject();
+                POST_PARAM.put("username", mName);
+                POST_PARAM.put("password", mPassword);
+                Util.sendPostJSON(conn, POST_PARAM);
+
+                //OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+                //Send request
+                DataOutputStream out = new DataOutputStream (
+                        conn.getOutputStream ());
+                out.flush();
+                out.close();
+
+
+
+
+                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) Log.d("HTTP OK", "200");
+                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+
+                    // Disconnect and reconnect
+                    conn.disconnect();
+                    conn = (HttpURLConnection) new URL(url+"register").openConnection();
+
+                    // set to POST
+                    conn = Util.setPostConnection(conn);
+                    JSONObject POST_PARAM2 = new JSONObject();
+                    POST_PARAM.put("name", mName);
+                    POST_PARAM.put("pw", mPassword);
+                    Util.sendPostJSON(conn, POST_PARAM);
+
+                    if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED){
+                        throw new IOException(conn.getResponseMessage() +": with " + url);
+                    }
+
+                    // Attempt login again after User has been created
+                    conn.disconnect();
+                    conn = (HttpURLConnection) new URL(url+"register").openConnection();
+                }
+                //responseUser = Util.parseUserJson(Util.getResponseString(conn));
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            } finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
+            }
+            return responseUser;
+        }
+
+        @Override
+        protected void onPostExecute(user_rest responseUser) {
+            mAuthTask = null;
+
+            if (responseUser == null) {
+                //Toast.makeText(act, R.string.error_incorrect_name, Toast.LENGTH_LONG).show();
+            } else {
+                if (!responseUser.getPassword_cs().equals(mPassword)) {
+                    Log.d("Password","Invalid");
+                    // TODO mPassword hashing
+                } else {
+                    Toast.makeText(getApplicationContext(), "Logging in as: "+responseUser.getUser_cs(), Toast.LENGTH_LONG).show();
+                    //act.displayHome(responseUser.getName());
+                }
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
+        }
+    }
 }
+

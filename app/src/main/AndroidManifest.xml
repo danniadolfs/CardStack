@@ -23,6 +23,7 @@
         </activity>
         <activity
             android:name=".gameActivity"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_game"
             android:theme="@style/FullscreenTheme" />

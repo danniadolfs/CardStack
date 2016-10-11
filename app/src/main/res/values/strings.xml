@@ -2,13 +2,13 @@
     <string name="app_name">CardStack</string>
     <string name="play_button">Play</string>
     <string name="score_button">Leaderboard</string>
-    <string name="dummy_content">Card\nStack</string>
+    <string name="dummy_content">Card\n\nStack</string>
     <string name="main_title">CardStack</string>
 
 
     <string name="title_activity_game">gameActivity</string>
     <string name="dummy_button">Dummy Button</string>
-    <string name="screen_game">GAME\nSCREEN</string>
+    <string name="screen_game">CARD\nSTACK</string>
     <string name="title_activity_leaderboard">LeaderboardActivity</string>
     <string name="action_settings">Settings</string>
 
@@ -16,5 +16,24 @@
     <string name="content_score">[score]</string>
     <string name="content_time">[time]</string>
     <string name="action_refresh">Refresh</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="check_AI">Check if you want an A.I to ruin your score</string>
+    <string name="game_settings">Here are a few options to set up the game, the two buttons will start the game in either normal or \'arcade\' mode.</string>
+    <string name="normal_mode">NORMAL MODE</string>
+    <string name="arcade_mode">ARCADE MODE</string>
+    <string name="explain_game">Sort the cards into spades, clovers, hearts and diamonds. You can
+    place any card at the start, but after that, the next card needs to be one above.\n
+    \nUP = SPADES\n
+    DOWN = CLOVERS\n
+    LEFT = HEARTS\n
+    RIGHT = DIAMONDS\n
+    \n Arcade mode has a 1 min time limit, normal mode does not.</string>
+
+    <string name="login_form">Login \/ Register</string>
+    <string name="user_name">Name</string>
+    <string name="user_password">Password</string>
+    <string name="user_register">Don\'t have a user? Register here.</string>
+    <string name="back_to_main">Back</string>
 
 </resources>

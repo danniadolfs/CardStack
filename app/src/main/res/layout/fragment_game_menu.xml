@@ -1,0 +1,49 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#b7d5e9"
+    tools:context="com.example.d3.cardstack.GameMenuFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="104dp"
+        android:text="@string/check_AI"
+        android:id="@+id/checkBox"
+        android:layout_gravity="left|top" />
+
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#372c24"
+        android:text="Enter name: "/>
+    <EditText android:layout_width="fill_parent"
+        android:id="@+id/player_name"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:singleLine="true" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/arcade_mode"
+        android:id="@+id/arcade_button"
+        android:layout_gravity="right|center_vertical" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/normal_mode"
+        android:id="@+id/normal_button"
+        android:layout_gravity="left|center_vertical" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/explain_game"
+        android:id="@+id/textView2"
+        android:layout_gravity="bottom|center" />
+
+</FrameLayout>

@@ -1,11 +1,7 @@
 package com.example.d3.cardstack;
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,15 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,17 +23,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.zip.Inflater;
 
 public class LeaderboardActivity extends AppCompatActivity {
 
     private List<leaderboard_rest> highscore;
     private ListView resultListView;
     private static final String url = "http://cardstackserver.herokuapp.com/scores";
+    private static final String url_arcade = "http://cardstackserver.herokuapp.com/scores-arcade";
+    public boolean arcade_mode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,31 +84,24 @@ public class LeaderboardActivity extends AppCompatActivity {
     public static List<leaderboard_rest> parseSLeaderboardListJson(String jsonString) throws JSONException {
         List<leaderboard_rest> Leaderboard = new ArrayList<>();
         JSONArray jsonResults = new JSONArray(jsonString);
-
+        Boolean arcade = false;
+        
         for (int i = 0; i < jsonResults.length(); i++) {
             JSONObject jsonResult = jsonResults.getJSONObject(i);
             Log.d("JSONObject",jsonResult.getString("name"));
             Log.d("JSONObject",jsonResult.getString("score"));
-            Leaderboard.add(new leaderboard_rest(
-                    jsonResult.getString("_id"),
-                    jsonResult.getString("name"),
-                    jsonResult.getString("score"),
-                    jsonResult.getString("time")
-            ));
-        }
-        return Leaderboard;
-    }
+                Leaderboard.add(new leaderboard_rest(
+                        jsonResult.getString("_id"),
+                        jsonResult.getString("name"),
+                        jsonResult.getString("score"),
+                        jsonResult.getString("time")
+                ));
 
-    public static HttpURLConnection setPostConnection(HttpURLConnection conn) {
-        try {
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type","application/json");
-            conn.setDoOutput(true);
-            conn.setChunkedStreamingMode(2048);
-        } catch (ProtocolException e) {
-            e.printStackTrace();
         }
-        return conn;
+
+
+        Collections.reverse(Leaderboard);
+        return Leaderboard;
     }
 
     public leaderboard_rest getHighscore(int i){
@@ -155,6 +139,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                                     highscore
                             );
                             resultListView.setAdapter(srAdapter);
+                            resultListView.invalidate();
                         }
                     });
                 }
@@ -196,9 +181,9 @@ class LeaderboardAdapter extends ArrayAdapter<leaderboard_rest> {
             if(name!=null)
                 name.setText(sr.getName_cs());
             if(score!=null)
-                score.setText(sr.getScore_cs());
+                score.setText("Score: "+sr.getScore_cs());
             if(time!=null)
-                time.setText(sr.getTime_cs());
+                time.setText("Time: "+sr.getTime_cs());
         }
         return v;
     }

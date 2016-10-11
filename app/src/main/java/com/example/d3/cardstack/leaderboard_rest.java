@@ -33,4 +33,10 @@ public class leaderboard_rest {
     public String getTime_cs(){
         return this.time;
     }
+
+    public void setName_cs(){this.name = name;}
+
+    public void setScore_cs(){this.score = score;}
+
+    public void setTime_cs(){this.time = time;}
 }
